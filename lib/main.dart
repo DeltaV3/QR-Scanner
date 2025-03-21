@@ -128,7 +128,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, -3),
@@ -185,15 +185,17 @@ class _QRScannerPageState extends State<QRScannerPage> {
 
   // Función para abrir URLs
   Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No se pudo abrir: $url')),
-        );
-      }
+  final Uri uri = Uri.parse(url);
+  bool launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+  if (!launched && mounted) { // Verifica si el widget sigue montado
+    if (context.mounted) { // Verificación extra para seguridad
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo abrir: $url')),
+      );
     }
   }
+}
 
   @override
   void dispose() {
